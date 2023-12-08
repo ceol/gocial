@@ -8,7 +8,7 @@ import (
 var DB *gorm.DB
 
 func Connect() error {
-	db, err := gorm.Open(sqlite.Open("db.sqlite"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("gocial.db"), &gorm.Config{})
 	DB = db
 	return err
 }

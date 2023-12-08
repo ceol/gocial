@@ -9,7 +9,7 @@ type UserRepository interface {
 	Create(user *models.User) error
 	Update(user *models.User) error
 	Delete(user *models.User) error
-	Find(id uint) (*models.User, error)
+	Find(user *models.User) error
 }
 
 type GormUserRepository struct {
@@ -28,12 +28,16 @@ func (repo GormUserRepository) Delete(user *models.User) error {
 	return repo.DB.Delete(user).Error
 }
 
-func (repo GormUserRepository) Find(id uint) (*models.User, error) {
-	user := &models.User{}
-	return user, repo.DB.First(user, "id = ?", id).Error
+func (repo GormUserRepository) Find(user *models.User) error {
+	return repo.DB.First(&user).Error
 }
 
-func NewUserRepository(db *gorm.DB) *UserRepository {
+func (repo GormUserRepository) FindAll(user *models.User) ([]models.User, error) {
+	var users []models.User
+	return users, repo.DB.Where(user).Find(&users).Error
+}
+
+func NewUserRepository(db *gorm.DB) UserRepository {
 	var repo UserRepository = GormUserRepository{DB: db}
-	return &repo
+	return repo
 }
