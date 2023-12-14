@@ -30,12 +30,12 @@ func (repo GormPostRepository) Delete(post *models.Post) error {
 }
 
 func (repo GormPostRepository) Find(post *models.Post) error {
-	return repo.DB.First(post).Error
+	return repo.DB.Where(post).First(post).Error
 }
 
 func (repo GormPostRepository) FindAllByUser(userId uint) ([]models.Post, error) {
 	posts := []models.Post{}
-	return posts, repo.DB.Where("user_id = ?", userId).Error
+	return posts, repo.DB.Where("user_id = ?", userId).Find(&posts).Error
 }
 
 func NewPostRepository(db *gorm.DB) PostRepository {

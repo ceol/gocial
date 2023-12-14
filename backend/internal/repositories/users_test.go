@@ -65,7 +65,7 @@ func TestUserUpdate(t *testing.T) {
 	user = &models.User{ID: originalID}
 	repo.Find(user)
 	if user.UserName == originalName {
-		t.Errorf("User.UserName not updated: %v", user)
+		t.Errorf("User not updated: %v", user)
 	}
 	if user.UpdatedAt == originalUpdated {
 		t.Errorf("User.UpdatedAt not updated: %v", user)
@@ -78,8 +78,8 @@ func TestUserDelete(t *testing.T) {
 	user := &models.User{}
 	repo.Create(user)
 
-	repo.Delete(user)
-	if !user.DeletedAt.Valid {
-		t.Errorf("User not deleted: %v", user)
+	err := repo.Delete(user)
+	if err != nil || !user.DeletedAt.Valid {
+		t.Errorf("User not deleted: %v [%v]", user, err)
 	}
 }
