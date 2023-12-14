@@ -6,10 +6,11 @@ import (
 )
 
 type UserRepository interface {
-	Create(user *models.User) error
-	Update(user *models.User) error
-	Delete(user *models.User) error
-	Find(user *models.User) error
+	Create(*models.User) error
+	Update(*models.User) error
+	Delete(*models.User) error
+	Find(*models.User) error
+	FindAll(*models.User) ([]models.User, error)
 }
 
 type GormUserRepository struct {
@@ -29,7 +30,7 @@ func (repo GormUserRepository) Delete(user *models.User) error {
 }
 
 func (repo GormUserRepository) Find(user *models.User) error {
-	return repo.DB.First(&user).Error
+	return repo.DB.First(user).Error
 }
 
 func (repo GormUserRepository) FindAll(user *models.User) ([]models.User, error) {

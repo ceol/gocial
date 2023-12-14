@@ -6,11 +6,11 @@ import (
 )
 
 type PostRepository interface {
-	Create(post *models.Post) error
-	Update(post *models.Post) error
-	Delete(post *models.Post) error
-	Find(id uint) (models.Post, error)
-	FindAllByUser(userId uint) ([]models.Post, error)
+	Create(*models.Post) error
+	Update(*models.Post) error
+	Delete(*models.Post) error
+	Find(*models.Post) error
+	FindAllByUser(uint) ([]models.Post, error)
 }
 
 type GormPostRepository struct {
@@ -29,9 +29,8 @@ func (repo GormPostRepository) Delete(post *models.Post) error {
 	return repo.DB.Delete(post).Error
 }
 
-func (repo GormPostRepository) Find(id uint) (models.Post, error) {
-	post := models.Post{}
-	return post, repo.DB.First(post, "id = ?", id).Error
+func (repo GormPostRepository) Find(post *models.Post) error {
+	return repo.DB.First(post).Error
 }
 
 func (repo GormPostRepository) FindAllByUser(userId uint) ([]models.Post, error) {
@@ -40,6 +39,5 @@ func (repo GormPostRepository) FindAllByUser(userId uint) ([]models.Post, error)
 }
 
 func NewPostRepository(db *gorm.DB) PostRepository {
-	var repo PostRepository = GormPostRepository{DB: db}
-	return repo
+	return GormPostRepository{DB: db}
 }
