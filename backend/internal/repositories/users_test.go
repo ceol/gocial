@@ -50,7 +50,7 @@ func TestUserFindAll(t *testing.T) {
 	}
 }
 
-func TestUserUpdate(t *testing.T) {
+func TestUserSave(t *testing.T) {
 	repo := NewUserRepository(database.DB)
 
 	originalName := "test_user"
@@ -60,7 +60,7 @@ func TestUserUpdate(t *testing.T) {
 	originalUpdated := user.UpdatedAt
 
 	user.UserName = "test_changed"
-	repo.Update(user)
+	repo.Save(user)
 
 	user = &models.User{ID: originalID}
 	repo.Find(user)

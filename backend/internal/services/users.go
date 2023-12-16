@@ -18,26 +18,27 @@ func (serv UserService) Create(
 	password string,
 ) (models.User, error) {
 	user := models.User{
-		UserName:     userName,
-		Email:        email,
-		PasswordHash: HashPassword(password),
+		UserName: userName,
+		Email:    email,
 	}
+	serv.SetPassword(&user, password)
 	return user, serv.repo.Create(&user)
 }
 
-func (serv UserService) Update(user models.User) error {
-	return serv.repo.Update(&user)
+func (serv UserService) Save(user *models.User) error {
+	return serv.repo.Save(user)
 }
 
-func (serv UserService) SetPassword(id uint, newPassword string) error {
-	return serv.repo.Update(&models.User{
-		ID:           id,
-		PasswordHash: HashPassword(newPassword),
-	})
+func (serv UserService) SetPassword(user *models.User, newPassword string) {
+	user.PasswordHash = HashPassword(newPassword)
 }
 
-func (serv UserService) Delete(id uint) error {
-	return serv.repo.Delete(&models.User{ID: id})
+func (serv UserService) Delete(user *models.User) error {
+	return serv.repo.Delete(user)
+}
+
+func (serv UserService) Find(user *models.User) error {
+	return serv.repo.Find(user)
 }
 
 func (serv UserService) FindById(id uint) (models.User, error) {

@@ -7,7 +7,7 @@ import (
 
 type UserRepository interface {
 	Create(*models.User) error
-	Update(*models.User) error
+	Save(*models.User) error
 	Delete(*models.User) error
 	Find(*models.User) error
 	FindAll(*models.User) ([]models.User, error)
@@ -21,7 +21,7 @@ func (repo GormUserRepository) Create(user *models.User) error {
 	return repo.DB.Create(user).Error
 }
 
-func (repo GormUserRepository) Update(user *models.User) error {
+func (repo GormUserRepository) Save(user *models.User) error {
 	return repo.DB.Save(user).Error
 }
 

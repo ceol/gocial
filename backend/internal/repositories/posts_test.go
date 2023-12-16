@@ -54,7 +54,7 @@ func TestPostFindAllByUser(t *testing.T) {
 	}
 }
 
-func TestPostUpdate(t *testing.T) {
+func TestPostSave(t *testing.T) {
 	repo := NewPostRepository(database.DB)
 
 	post := &models.Post{}
@@ -62,7 +62,7 @@ func TestPostUpdate(t *testing.T) {
 
 	testContent := "test update"
 	post = &models.Post{ID: post.ID, Content: testContent}
-	err := repo.Update(post)
+	err := repo.Save(post)
 	if err != nil {
 		t.Errorf("Error updating post: %v [%v]", post, err)
 	}

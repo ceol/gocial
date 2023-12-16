@@ -7,7 +7,7 @@ import (
 
 type PostRepository interface {
 	Create(*models.Post) error
-	Update(*models.Post) error
+	Save(*models.Post) error
 	Delete(*models.Post) error
 	Find(*models.Post) error
 	FindAllByUser(uint) ([]models.Post, error)
@@ -21,7 +21,7 @@ func (repo GormPostRepository) Create(post *models.Post) error {
 	return repo.DB.Create(post).Error
 }
 
-func (repo GormPostRepository) Update(post *models.Post) error {
+func (repo GormPostRepository) Save(post *models.Post) error {
 	return repo.DB.Save(post).Error
 }
 
