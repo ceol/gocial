@@ -1,8 +1,6 @@
 package services
 
 import (
-	"log"
-
 	"github.com/ceol/gocial/internal/models"
 	"github.com/ceol/gocial/internal/repositories"
 	"golang.org/x/crypto/bcrypt"
@@ -29,8 +27,12 @@ func (serv UserService) Save(user *models.User) error {
 	return serv.repo.Save(user)
 }
 
-func (serv UserService) SetPassword(user *models.User, newPassword string) {
-	user.PasswordHash = HashPassword(newPassword)
+func (serv UserService) SetPassword(user *models.User, newPassword string) error {
+	hashed, err := HashPassword(newPassword)
+	if hashed != "" {
+		user.PasswordHash = hashed
+	}
+	return err
 }
 
 func (serv UserService) Delete(user *models.User) error {
@@ -41,7 +43,7 @@ func (serv UserService) Find(user *models.User) error {
 	return serv.repo.Find(user)
 }
 
-func (serv UserService) FindById(id uint) (models.User, error) {
+func (serv UserService) FindByID(id uint) (models.User, error) {
 	user := models.User{ID: id}
 	return user, serv.repo.Find(&user)
 }
@@ -55,12 +57,9 @@ func NewUserService(repo repositories.UserRepository) UserService {
 	return UserService{repo}
 }
 
-func HashPassword(password string) string {
+func HashPassword(password string) (string, error) {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		log.Println(err)
-	}
-	return string(hashed)
+	return string(hashed), err
 }
 
 func CheckPasswordHash(password string, hash string) bool {
