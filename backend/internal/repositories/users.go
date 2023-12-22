@@ -6,36 +6,32 @@ import (
 )
 
 type UserRepository interface {
-	Create(*models.User) error
-	Save(*models.User) error
-	Delete(*models.User) error
-	Find(*models.User) error
-	FindAll(*models.User) ([]models.User, error)
+	Save(models.User) (models.User, error)
+	DeleteByID(uint) error
+	FindByID(uint) (models.User, error)
+	FindByUserName(string) (models.User, error)
 }
 
 type GormUserRepository struct {
 	DB *gorm.DB
 }
 
-func (repo GormUserRepository) Create(user *models.User) error {
-	return repo.DB.Create(user).Error
+func (repo GormUserRepository) Save(user models.User) (models.User, error) {
+	return user, repo.DB.Save(&user).Error
 }
 
-func (repo GormUserRepository) Save(user *models.User) error {
-	return repo.DB.Save(user).Error
+func (repo GormUserRepository) DeleteByID(id uint) error {
+	return repo.DB.Delete(&models.User{ID: id}).Error
 }
 
-func (repo GormUserRepository) Delete(user *models.User) error {
-	return repo.DB.Delete(user).Error
+func (repo GormUserRepository) FindByID(id uint) (models.User, error) {
+	user := models.User{}
+	return user, repo.DB.Where("id = ?", id).Take(&user).Error
 }
 
-func (repo GormUserRepository) Find(user *models.User) error {
-	return repo.DB.Where(user).First(user).Error
-}
-
-func (repo GormUserRepository) FindAll(user *models.User) ([]models.User, error) {
-	var users []models.User
-	return users, repo.DB.Where(user).Find(&users).Error
+func (repo GormUserRepository) FindByUserName(userName string) (models.User, error) {
+	user := models.User{}
+	return user, repo.DB.Where("user_name = ?", userName).Take(&user).Error
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {

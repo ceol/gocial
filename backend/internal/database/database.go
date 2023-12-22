@@ -4,12 +4,15 @@ import (
 	"github.com/ceol/gocial/internal/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var DB *gorm.DB
 
 func Open(uri string) (*gorm.DB, error) {
-	return gorm.Open(sqlite.Open(uri), &gorm.Config{})
+	return gorm.Open(sqlite.Open(uri), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 }
 
 func Connect(uri string) error {

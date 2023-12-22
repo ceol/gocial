@@ -7,79 +7,48 @@ import (
 	"github.com/ceol/gocial/internal/models"
 )
 
-func TestUserCreate(t *testing.T) {
+func TestUserSave(t *testing.T) {
 	repo := NewUserRepository(database.DB)
 
-	user := &models.User{}
-	repo.Create(user)
-	if user.ID == 0 {
-		t.Errorf("User not created: %v", user)
+	user, err := repo.Save(models.User{})
+	if err != nil || user.ID == 0 {
+		t.Errorf("User not created: %v [%v]", user, err)
 	}
 }
 
-func TestUserFind(t *testing.T) {
+func TestUserFindByID(t *testing.T) {
 	repo := NewUserRepository(database.DB)
 
-	user := &models.User{UserName: "test_find"}
-	repo.Create(user)
-	originalID := user.ID
+	user, _ := repo.Save(models.User{})
+	userID := user.ID
 
-	user = &models.User{ID: originalID}
-	err := repo.Find(user)
-	if err != nil || user.UserName != "test_find" {
+	user, err := repo.FindByID(userID)
+	if err != nil || user.ID != userID {
 		t.Errorf("User not found: %v [%v]", user, err)
 	}
 }
 
-func TestUserFindAll(t *testing.T) {
+func TestUserFindByUserName(t *testing.T) {
 	repo := NewUserRepository(database.DB)
 
-	users := []*models.User{
-		{UserName: "test_findall"},
-		{UserName: "test_findall"},
-		{UserName: "test_findall"},
-		{UserName: "test_findall2"},
-	}
-	for _, user := range users {
-		repo.Create(user)
-	}
+	user, _ := repo.Save(models.User{UserName: "testusername"})
+	userName := user.UserName
 
-	results, err := repo.FindAll(&models.User{UserName: "test_findall"})
-	if err != nil || len(results) != 3 {
-		t.Errorf("Users not found: %v [%v]", results, err)
+	user, err := repo.FindByUserName(userName)
+	if err != nil || user.UserName != userName {
+		t.Errorf("User not found: %v [%v]", user, err)
 	}
 }
 
-func TestUserSave(t *testing.T) {
+func TestUserDeleteByID(t *testing.T) {
 	repo := NewUserRepository(database.DB)
 
-	originalName := "test_user"
-	user := &models.User{UserName: originalName}
-	repo.Create(user)
-	originalID := user.ID
-	originalUpdated := user.UpdatedAt
+	user, _ := repo.Save(models.User{})
 
-	user.UserName = "test_changed"
-	repo.Save(user)
+	err := repo.DeleteByID(user.ID)
 
-	user = &models.User{ID: originalID}
-	repo.Find(user)
-	if user.UserName == originalName {
-		t.Errorf("User not updated: %v", user)
-	}
-	if user.UpdatedAt == originalUpdated {
-		t.Errorf("User.UpdatedAt not updated: %v", user)
-	}
-}
-
-func TestUserDelete(t *testing.T) {
-	repo := NewUserRepository(database.DB)
-
-	user := &models.User{}
-	repo.Create(user)
-
-	err := repo.Delete(user)
-	if err != nil || !user.DeletedAt.Valid {
+	_, findErr := repo.FindByID(user.ID)
+	if err != nil || findErr == nil {
 		t.Errorf("User not deleted: %v [%v]", user, err)
 	}
 }

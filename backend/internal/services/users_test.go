@@ -47,20 +47,6 @@ func TestUserSetPassword(t *testing.T) {
 	}
 }
 
-func TestUserFind(t *testing.T) {
-	repo := repositories.NewUserRepository(database.DB)
-	serv := NewUserService(repo)
-
-	userName := "testuserfind"
-	user, _ := serv.Create(userName, fmt.Sprintf("%v@test.com", userName), "test password")
-
-	user = models.User{UserName: user.UserName, Email: user.Email}
-	err := serv.Find(&user)
-	if err != nil || user.ID == 0 {
-		t.Errorf("Find(%v) failed: [%v]", user, err)
-	}
-}
-
 func TestUserFindByID(t *testing.T) {
 	repo := repositories.NewUserRepository(database.DB)
 	serv := NewUserService(repo)
@@ -96,7 +82,7 @@ func TestUserSave(t *testing.T) {
 
 	testChange := "testusersave2"
 	user.UserName = testChange
-	err := serv.Save(&user)
+	user, err := serv.Save(user)
 
 	user, _ = serv.FindByID(user.ID)
 	if err != nil || user.UserName != testChange {
@@ -104,16 +90,17 @@ func TestUserSave(t *testing.T) {
 	}
 }
 
-func TestUserDelete(t *testing.T) {
+func TestUserDeleteByID(t *testing.T) {
 	repo := repositories.NewUserRepository(database.DB)
 	serv := NewUserService(repo)
 
 	userName := "testuserdelete"
 	user, _ := serv.Create(userName, fmt.Sprintf("%v@test.com", userName), "test password")
 
-	err := serv.Delete(&user)
+	err := serv.DeleteByID(user.ID)
 
-	if err != nil || !user.DeletedAt.Valid {
-		t.Errorf("Delete(%v) failed: [%v]", user, err)
+	_, findErr := serv.FindByID(user.ID)
+	if err != nil || findErr == nil {
+		t.Errorf("DeleteByID(%v) failed: [%v]", user, err)
 	}
 }

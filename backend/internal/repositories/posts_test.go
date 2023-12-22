@@ -7,81 +7,56 @@ import (
 	"github.com/ceol/gocial/internal/models"
 )
 
-func TestPostCreate(t *testing.T) {
+func TestPostSave(t *testing.T) {
 	repo := NewPostRepository(database.DB)
 
-	post := &models.Post{}
-	repo.Create(post)
-	if post.ID == 0 {
-		t.Errorf("Post not created: %v", post)
+	post, err := repo.Save(models.Post{})
+	if err != nil || post.ID == 0 {
+		t.Errorf("Post not created: %v [%v]", post, err)
 	}
 }
 
-func TestPostFind(t *testing.T) {
+func TestPostFindByID(t *testing.T) {
 	repo := NewPostRepository(database.DB)
 
-	testContent := "test find"
+	post, _ := repo.Save(models.Post{})
+	postID := post.ID
 
-	post := &models.Post{Content: testContent}
-	repo.Create(post)
-
-	post = &models.Post{Content: testContent}
-	err := repo.Find(post)
-	if err != nil || post.Content != testContent {
+	post, err := repo.FindByID(postID)
+	if err != nil || post.ID != postID {
 		t.Errorf("Post not found: %v [%v]", post, err)
 	}
 }
 
-func TestPostFindAllByUser(t *testing.T) {
-	userRepo := NewUserRepository(database.DB)
-	user := &models.User{}
-	userRepo.Create(user)
+func TestPostFindAllByUserID(t *testing.T) {
+	repo := NewPostRepository(database.DB)
 
-	postRepo := NewPostRepository(database.DB)
-	posts := []*models.Post{
-		{UserID: user.ID},
-		{UserID: user.ID},
-		{UserID: user.ID},
+	var userID uint = 99
+	posts := []models.Post{
+		{UserID: userID},
+		{UserID: userID},
+		{UserID: userID},
 		{UserID: 0},
 	}
 	for _, post := range posts {
-		postRepo.Create(post)
+		repo.Save(post)
 	}
 
-	results, err := postRepo.FindAllByUser(user.ID)
+	results, err := repo.FindAllByUserID(userID)
 	if err != nil || len(results) != 3 {
 		t.Errorf("Posts not found: %v [%v]", results, err)
 	}
 }
 
-func TestPostSave(t *testing.T) {
+func TestPostDeleteByID(t *testing.T) {
 	repo := NewPostRepository(database.DB)
 
-	post := &models.Post{}
-	repo.Create(post)
+	post, _ := repo.Save(models.Post{})
 
-	testContent := "test update"
-	post = &models.Post{ID: post.ID, Content: testContent}
-	err := repo.Save(post)
-	if err != nil {
-		t.Errorf("Error updating post: %v [%v]", post, err)
-	}
+	err := repo.DeleteByID(post.ID)
 
-	post = &models.Post{ID: post.ID}
-	repo.Find(post)
-	if post.Content != testContent {
-		t.Errorf("Post not updated: %v", post)
-	}
-}
-
-func TestPostDelete(t *testing.T) {
-	repo := NewPostRepository(database.DB)
-
-	post := &models.Post{}
-	repo.Create(post)
-
-	err := repo.Delete(post)
-	if err != nil || !post.DeletedAt.Valid {
+	_, findErr := repo.FindByID(post.ID)
+	if err != nil || findErr == nil {
 		t.Errorf("Post not deleted: %v [%v]", post, err)
 	}
 }

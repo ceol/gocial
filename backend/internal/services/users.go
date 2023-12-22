@@ -20,10 +20,10 @@ func (serv UserService) Create(
 		Email:    email,
 	}
 	serv.SetPassword(&user, password)
-	return user, serv.repo.Create(&user)
+	return serv.repo.Save(user)
 }
 
-func (serv UserService) Save(user *models.User) error {
+func (serv UserService) Save(user models.User) (models.User, error) {
 	return serv.repo.Save(user)
 }
 
@@ -35,22 +35,16 @@ func (serv UserService) SetPassword(user *models.User, newPassword string) error
 	return err
 }
 
-func (serv UserService) Delete(user *models.User) error {
-	return serv.repo.Delete(user)
-}
-
-func (serv UserService) Find(user *models.User) error {
-	return serv.repo.Find(user)
+func (serv UserService) DeleteByID(id uint) error {
+	return serv.repo.DeleteByID(id)
 }
 
 func (serv UserService) FindByID(id uint) (models.User, error) {
-	user := models.User{ID: id}
-	return user, serv.repo.Find(&user)
+	return serv.repo.FindByID(id)
 }
 
 func (serv UserService) FindByUserName(userName string) (models.User, error) {
-	user := models.User{UserName: userName}
-	return user, serv.repo.Find(&user)
+	return serv.repo.FindByUserName(userName)
 }
 
 func NewUserService(repo repositories.UserRepository) UserService {

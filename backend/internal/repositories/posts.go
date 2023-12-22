@@ -6,36 +6,32 @@ import (
 )
 
 type PostRepository interface {
-	Create(*models.Post) error
-	Save(*models.Post) error
-	Delete(*models.Post) error
-	Find(*models.Post) error
-	FindAllByUser(uint) ([]models.Post, error)
+	Save(models.Post) (models.Post, error)
+	DeleteByID(uint) error
+	FindByID(uint) (models.Post, error)
+	FindAllByUserID(uint) ([]models.Post, error)
 }
 
 type GormPostRepository struct {
 	DB *gorm.DB
 }
 
-func (repo GormPostRepository) Create(post *models.Post) error {
-	return repo.DB.Create(post).Error
+func (repo GormPostRepository) Save(post models.Post) (models.Post, error) {
+	return post, repo.DB.Save(&post).Error
 }
 
-func (repo GormPostRepository) Save(post *models.Post) error {
-	return repo.DB.Save(post).Error
+func (repo GormPostRepository) DeleteByID(id uint) error {
+	return repo.DB.Delete(&models.Post{ID: id}).Error
 }
 
-func (repo GormPostRepository) Delete(post *models.Post) error {
-	return repo.DB.Delete(post).Error
+func (repo GormPostRepository) FindByID(id uint) (models.Post, error) {
+	post := models.Post{}
+	return post, repo.DB.Where("id = ?", id).Take(&post).Error
 }
 
-func (repo GormPostRepository) Find(post *models.Post) error {
-	return repo.DB.Where(post).First(post).Error
-}
-
-func (repo GormPostRepository) FindAllByUser(userId uint) ([]models.Post, error) {
+func (repo GormPostRepository) FindAllByUserID(userID uint) ([]models.Post, error) {
 	posts := []models.Post{}
-	return posts, repo.DB.Where("user_id = ?", userId).Find(&posts).Error
+	return posts, repo.DB.Where("user_id = ?", userID).Find(&posts).Error
 }
 
 func NewPostRepository(db *gorm.DB) PostRepository {
