@@ -28,14 +28,14 @@ func TestUserFindByID(t *testing.T) {
 	}
 }
 
-func TestUserFindByUserName(t *testing.T) {
+func TestUserFindByName(t *testing.T) {
 	repo := NewUserRepository(database.DB)
 
-	user, _ := repo.Save(models.User{UserName: "testusername"})
-	userName := user.UserName
+	user, _ := repo.Save(models.User{Name: "testusername"})
+	name := user.Name
 
-	user, err := repo.FindByUserName(userName)
-	if err != nil || user.UserName != userName {
+	user, err := repo.FindByName(name)
+	if err != nil || user.Name != name {
 		t.Errorf("User not found: %v [%v]", user, err)
 	}
 }

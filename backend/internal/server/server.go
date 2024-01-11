@@ -1,6 +1,12 @@
 package server
 
+import api "github.com/ceol/gocial/internal/api/routes"
+
 func Start() {
 	router := NewRouter()
-	router.Run(":8080")
+
+	apiGroup := router.Group("/api")
+	api.AddRoutes(apiGroup)
+
+	router.Run()
 }

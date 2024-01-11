@@ -9,7 +9,7 @@ type UserRepository interface {
 	Save(models.User) (models.User, error)
 	DeleteByID(uint) error
 	FindByID(uint) (models.User, error)
-	FindByUserName(string) (models.User, error)
+	FindByName(string) (models.User, error)
 }
 
 type GormUserRepository struct {
@@ -29,9 +29,9 @@ func (repo GormUserRepository) FindByID(id uint) (models.User, error) {
 	return user, repo.DB.Where("id = ?", id).Take(&user).Error
 }
 
-func (repo GormUserRepository) FindByUserName(userName string) (models.User, error) {
+func (repo GormUserRepository) FindByName(name string) (models.User, error) {
 	user := models.User{}
-	return user, repo.DB.Where("user_name = ?", userName).Take(&user).Error
+	return user, repo.DB.Where("user_name = ?", name).Take(&user).Error
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {

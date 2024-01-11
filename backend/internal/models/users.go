@@ -11,7 +11,7 @@ type User struct {
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
-	UserName     string
+	Name         string
 	Email        string
 	PasswordHash string
 }

@@ -22,6 +22,9 @@ func Connect(uri string) error {
 }
 
 func Disconnect() error {
+	if DB == nil {
+		panic("No database connection")
+	}
 	db, _ := DB.DB()
 	return db.Close()
 }

@@ -14,7 +14,7 @@ func TestUserCreate(t *testing.T) {
 	serv := NewUserService(repo)
 
 	tests := []struct {
-		userName string
+		name     string
 		email    string
 		password string
 	}{
@@ -23,7 +23,7 @@ func TestUserCreate(t *testing.T) {
 		{"👏🥳🍰", "🫥🎉🐶", "🙏🥱🫡"},
 	}
 	for _, tt := range tests {
-		user, err := serv.Create(tt.userName, tt.email, tt.password)
+		user, err := serv.Create(tt.name, tt.email, tt.password)
 		if err != nil || user.ID == 0 {
 			t.Errorf("Create(%v) failed: %v [%v]", tt, user, err)
 		}
@@ -51,8 +51,8 @@ func TestUserFindByID(t *testing.T) {
 	repo := repositories.NewUserRepository(database.DB)
 	serv := NewUserService(repo)
 
-	userName := "testuserFindByID"
-	user, _ := serv.Create(userName, fmt.Sprintf("%v@test.com", userName), "test password")
+	name := "testuserFindByID"
+	user, _ := serv.Create(name, fmt.Sprintf("%v@test.com", name), "test password")
 	userID := user.ID
 
 	user, err := serv.FindByID(userID)
@@ -61,16 +61,16 @@ func TestUserFindByID(t *testing.T) {
 	}
 }
 
-func TestUserFindByUserName(t *testing.T) {
+func TestUserFindByName(t *testing.T) {
 	repo := repositories.NewUserRepository(database.DB)
 	serv := NewUserService(repo)
 
-	userName := "testuserfindbyusername"
-	user, _ := serv.Create(userName, fmt.Sprintf("%v@test.com", userName), "test password")
+	name := "testuserfindbyusername"
+	user, _ := serv.Create(name, fmt.Sprintf("%v@test.com", name), "test password")
 
-	user, err := serv.FindByUserName(userName)
-	if err != nil || user.UserName != userName {
-		t.Errorf("FindByUserName(%v) failed: got %v [%v]", userName, user, err)
+	user, err := serv.FindByName(name)
+	if err != nil || user.Name != name {
+		t.Errorf("FindByName(%v) failed: got %v [%v]", name, user, err)
 	}
 }
 
@@ -81,11 +81,11 @@ func TestUserSave(t *testing.T) {
 	user, _ := serv.Create("testusersave", "testusersave@test.com", "test password")
 
 	testChange := "testusersave2"
-	user.UserName = testChange
+	user.Name = testChange
 	user, err := serv.Save(user)
 
 	user, _ = serv.FindByID(user.ID)
-	if err != nil || user.UserName != testChange {
+	if err != nil || user.Name != testChange {
 		t.Errorf("Save(%v) failed: [%v]", user, err)
 	}
 }
@@ -94,8 +94,8 @@ func TestUserDeleteByID(t *testing.T) {
 	repo := repositories.NewUserRepository(database.DB)
 	serv := NewUserService(repo)
 
-	userName := "testuserdelete"
-	user, _ := serv.Create(userName, fmt.Sprintf("%v@test.com", userName), "test password")
+	name := "testuserdelete"
+	user, _ := serv.Create(name, fmt.Sprintf("%v@test.com", name), "test password")
 
 	err := serv.DeleteByID(user.ID)
 

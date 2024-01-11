@@ -11,13 +11,13 @@ type UserService struct {
 }
 
 func (serv UserService) Create(
-	userName string,
+	name string,
 	email string,
 	password string,
 ) (models.User, error) {
 	user := models.User{
-		UserName: userName,
-		Email:    email,
+		Name:  name,
+		Email: email,
 	}
 	serv.SetPassword(&user, password)
 	return serv.repo.Save(user)
@@ -43,8 +43,8 @@ func (serv UserService) FindByID(id uint) (models.User, error) {
 	return serv.repo.FindByID(id)
 }
 
-func (serv UserService) FindByUserName(userName string) (models.User, error) {
-	return serv.repo.FindByUserName(userName)
+func (serv UserService) FindByName(name string) (models.User, error) {
+	return serv.repo.FindByName(name)
 }
 
 func NewUserService(repo repositories.UserRepository) UserService {
